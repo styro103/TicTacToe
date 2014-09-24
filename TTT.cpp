@@ -10,9 +10,6 @@
 #include <time.h>
 using namespace std;
 
-// This program is written by Ankur Gupta.
-// This program is a template for the Connect Four game.
-
 // This function draws the board.
 void drawboard(ostream &, char[], int8_t); // This Function Draws the Board.
 int8_t humanmove(ostream & out, bool player, char board[], int8_t n); //This Function Handles the Human Move
@@ -21,6 +18,8 @@ bool verticalwin(char board[], int8_t n, int8_t move); //Function That Checks fo
 bool horizontalwin(char board[], int8_t n, int8_t move); //Function That Checks for Horizontal Win
 bool diagonalwin(char board[], int8_t n, int8_t move); //Function That Checks for Diagonal Win
 bool draw(char board[], int8_t n); //Function That Checks for Draw Game
+int8_t checkboard(char symbol, char board[], int8_t n); //Function for Computer to Check for Win or Loss
+bool * checkmoves(char symbol, char board[],int8_t n); //Function to Check if Computer Move Will Allow Human to Win
 
 int main () 
 {
@@ -215,6 +214,61 @@ int8_t humanmove(ostream & out, bool player, char board[9], int8_t n) //This Fun
 
 int8_t compmove(ostream & out, int8_t diff, bool player, char board[], int8_t n) //This Function Handles the Computer Move
 {
+	int8_t move = -1; //Playing Column, Initialized to -1
+	bool * moves; //Pointer to Hold Potential Computer Loss Columns
+	char symbol; //Playing Symbol
+	
+	if (player== 0) //First Player is X
+		symbol = 'X';
+	else //Second is O
+		symbol = 'O';
+	
+	if (diff>1) //Difficulty Level is More Than 1
+	{
+		//if (diff==3) //Max Difficulty
+			//move = 3; //Play Center Column If Bottom Space Open, Necessary to Assure Victory
+		if (move==-1) //Space Already Filled
+			move = checkboard(symbol, board, n); //Check If Computer can Win
+		if (move==-1) //No Winning Move for Computer
+		{
+			char tmp = 'X'; //Temporary Variable for Symbol
+			
+			if (player==0) //Set to Opposite Player Symbol
+				tmp = 'O';
+				
+			move = checkboard(tmp, board, n); //Check If Human can Win
+		}
+		if (move==-1 && diff==3) //Max Difficulty, Move Not Decided Yet
+		{
+			moves = checkmoves(symbol, board, n); //Check If Any Move Will Setup Human Win
+			
+			do //Choose Random Number, but Make Sure it Won't Result in Human Win
+				move=rand()%9;
+			while ((board[move]<'1' || board[move]>'9') || moves[move]==1);
+		}
+	}
+	if (move==-1)
+	{
+		//Create Random Number from 0-6, Loop Till Acceptable Input
+		do
+			move=rand()%9;
+		while (board[move]<'1' || board[move]>'9');
+	}
+	
+	board[move] = symbol; //Play Piece
+	cout<<"\nComputer Player "<<(player+1)<<" plays in space "<<(move+1)<<endl; //Display Play Message
+	out<<"Computer Player "<<(player+1)<<" plays in space "<<(move+1)<<endl; //Outfile Play Message
+	
+	if //Check for Game Win
+	(
+		verticalwin(board, n, move) || 
+		horizontalwin(board, n, move) || 
+		diagonalwin(board, n, move)
+	)
+		return 1;
+	if (draw(board, n)) //Check for Draw Game
+		return 2;
+	
 	return 0;
 }
 
@@ -308,4 +362,15 @@ bool draw(char board[], int8_t n) //Function That Checks for Draw Game
 	}
 	
 	return true; //If Not, Return False
+}
+
+int8_t checkboard(char symbol, char board[], int8_t n) //Function for Computer to Check for Win or Loss
+{
+	return -1;
+}
+bool * checkmoves(char symbol, char board[], int8_t n) //Function to Check if Computer Move Will Allow Human to Win
+{
+	static bool moves[9]; //Keep Track of Columns
+	
+	return moves;
 }
