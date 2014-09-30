@@ -1,7 +1,7 @@
 //*********************************************************
 //Shaun Mbateng
 //This program is a game of Tic Tac Toe.
-//This program works from 0 to 2 players.
+//Assuming All Correct Inputs, This Program Runs in O(N) Time
 //*********************************************************
 
 #include <iostream>
